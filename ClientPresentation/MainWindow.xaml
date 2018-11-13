@@ -1,0 +1,102 @@
+﻿<Window x:Class="ClientPresentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientPresentation"
+        mc:Ignorable="d"
+       Title="HoraViewer" Height="400" Width="700" WindowStyle="None"
+		AllowsTransparency="True"
+		WindowStartupLocation="CenterScreen" Closing="Window_Closing_1"  ResizeMode="CanResizeWithGrip" KeyUp="Window_KeyDown">
+	<Window.Background>
+		<ImageBrush/>
+	</Window.Background>
+	<Border  BorderBrush="White" x:Name="bor" >
+		<Grid x:Name="photodesctop">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="0.05*"/>
+				<RowDefinition/>
+			</Grid.RowDefinitions>
+			<Image x:Name="mail_image_desctop" Grid.RowSpan="2"/>
+			<Grid Grid.Row="1" >
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition Height="0.15*"/>
+				</Grid.RowDefinitions>
+				<Image x:Name="image_desctop" Grid.Row="0"/>
+				<Grid Grid.Row="0" >
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition  Width="0.3*"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition  Width="*"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="0.3*" />
+					</Grid.ColumnDefinitions>
+					<GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="5" Background="Black" Opacity="0.5"/>
+					<GridSplitter Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="5" Background="Black" Opacity="0.5"/>
+					<Grid Grid.Column="4" Opacity="0.8" >
+						<Grid.RowDefinitions>
+							<RowDefinition/>
+							<RowDefinition Height="0.1*"/>
+						</Grid.RowDefinitions>
+						<Grid Grid.Row="1">
+							<TextBox Grid.Column="0" Opacity="0.8" x:Name="TextBoxYou" TextWrapping="Wrap" BorderBrush="Green" KeyDown="TextBoxYou_KeyDown"  />
+						</Grid>
+						<TextBox Grid.Row="0" x:Name="TextBoxChatClient" VerticalScrollBarVisibility="Auto" BorderBrush="Green" Foreground="Black" FontSize="10" TextWrapping="Wrap"  FontWeight="Bold" />
+					</Grid>
+					<Grid Grid.Column="0" >
+						<Grid.RowDefinitions>
+							<RowDefinition Height="0.06*"/>
+							<RowDefinition Height="0.06*"/>
+							<RowDefinition />
+							<RowDefinition Height="0.06*"/>
+						</Grid.RowDefinitions>
+						<ListBox Grid.Row="2" Opacity="0.8" x:Name="ListFile" BorderBrush="Green" MouseDoubleClick="ListFile_MouseDoubleClick"/>
+						<ProgressBar x:Name="progress_bar" Opacity="0.8" Grid.Row="3" />
+						<Grid Grid.Row="0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition />
+								<ColumnDefinition />
+							</Grid.ColumnDefinitions>
+							<Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave"  Background="White" Foreground="Green" BorderBrush="Green" FontWeight="Black" Opacity="0.8" Content="Load file" Click="Button_Click"/>
+							<Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Background="White" Foreground="Green" BorderBrush="Green" FontWeight="Black" Opacity="0.8" Content="Folder Date" Click="Button_Click_2"/>
+						</Grid>
+						<Grid Grid.Row="1">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition />
+								<ColumnDefinition />
+							</Grid.ColumnDefinitions>
+							<Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Background="White" Foreground="Green" BorderBrush="Green" FontWeight="Black" Opacity="0.8" Content="Open mail" Click="Button_Click_1"/>
+							<Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Background="White" Foreground="Green" BorderBrush="Green" FontWeight="Black" Opacity="0.8" Content="Save all file" Click="Button_Click_3"/>
+						</Grid>
+					</Grid>
+				</Grid>
+				<Grid Grid.Row="1" x:Name="buttondesctop"  MouseEnter="r_MouseEnter" MouseLeave="r_MouseLeave" Background="Black" Opacity="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition x:Name="asd" Width="150*"/>
+						<ColumnDefinition Width="150*"/>
+						<ColumnDefinition Width="30*"/>
+						<ColumnDefinition Width="175*"/>
+					</Grid.ColumnDefinitions>
+					<Rectangle x:Name="Rectangle1" Grid.Column="1"   MouseDown="Rectangle_MouseDown"/>
+					<Rectangle x:Name="r_audio" Grid.Column="2" MouseDown="r_audio_MouseDown"/>
+					<ListBox x:Name="info_2" Grid.Column="3" Background="Black" Foreground="White"/>
+					<TextBlock x:Name="info_1"  VerticalAlignment="Center" Background="Black" Foreground="White" Grid.Column="0" Text="Dima" TextWrapping="Wrap"/>
+				</Grid>
+			</Grid>
+			<Grid Grid.Row="0" x:Name="menu_grid" MouseEnter="menu_grid_MouseEnter" MouseLeave="menu_grid_MouseLeave" Opacity="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition Width="0.05*"/>
+					<ColumnDefinition Width="0.05*"/>
+					<ColumnDefinition Width="0.05*"/>
+				</Grid.ColumnDefinitions>
+				<Rectangle Grid.Column="0"  Grid.ColumnSpan="4" Fill="Green" MouseDown="Rectangle_MouseDown_1" />
+				<Label Content="x" x:Name="exit_l" Grid.Column="3"  Foreground="White" FontSize="8" HorizontalAlignment="Center" MouseDown="Label_MouseDown" VerticalAlignment="Center" />
+				<Label  x:Name="m_l" Grid.Column="2" Foreground="White" FontSize="8" HorizontalAlignment="Center" MouseDown="Label_MouseDown" VerticalAlignment="Center"/>
+				<Label Content="^" x:Name="hide_l" Grid.Column="1" Foreground="White" FontSize="8" HorizontalAlignment="Center" MouseDown="Label_MouseDown" VerticalAlignment="Center"/>
+			</Grid>
+
+		</Grid>
+	</Border>
+</Window>
