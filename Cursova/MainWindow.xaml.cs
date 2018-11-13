@@ -690,7 +690,6 @@ namespace Cursova
             try
             {
                 this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "1"; });
-
                 input = new WaveIn();
                 input.DeviceNumber = 0;
                 input.WaveFormat = new WaveFormat(8000, 32, 2);
@@ -701,7 +700,6 @@ namespace Cursova
                     ++progress_bar.Value;
                 });
                 this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "2"; });
-
                 sender = new UdpClient();
                 endPoint = new IPEndPoint(IPAddress.Parse("233.233.233.233"), port_microfone);
                 input.StartRecording();
