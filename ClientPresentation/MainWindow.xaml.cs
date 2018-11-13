@@ -18,9 +18,10 @@ using System.Windows.Interop;
 using System.Net.Sockets;
 using System.IO;
 using System.Configuration;
+using System.Runtime.InteropServices;
+
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
-using System.Runtime.InteropServices;
 
 namespace ClientPresentation
 {

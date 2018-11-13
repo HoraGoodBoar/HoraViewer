@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Net;
 using System.Configuration;
 using System.ComponentModel;
+
 namespace REGISTRATION{
     public partial class MainWindow : Window{
         string IP;

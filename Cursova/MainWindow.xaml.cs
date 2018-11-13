@@ -20,11 +20,12 @@ using System.IO;
 using System.Reflection;
 using System.Net.Mail;
 using System.Configuration;
-using AForge.Video.FFMPEG;
+
 using AForge.Video;
+using AForge.Video.FFMPEG;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
-using System.Net.Sockets;
+
 namespace Cursova
 {
     public partial class MainWindow : Window
