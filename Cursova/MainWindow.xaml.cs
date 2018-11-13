@@ -232,8 +232,10 @@ namespace Cursova
                     TextBoxChatClient.SelectionStart = TextBoxChatClient.Text.Length;
                     TextBoxChatClient.ScrollToEnd();
                 }
-                catch { }
-            }
+				catch (Exception s) {
+					Console.WriteLine(s.Message);
+				}
+			}
         }
         private void ConnectClient(string IP,int port){
             try{                
@@ -343,8 +345,11 @@ namespace Cursova
                     Task go = new Task(new Action(delegate() { ReceiveDataChat(); }));
                     go.Start();
                     Thread.Sleep(10);
-                } catch { }
-            }            
+				}
+				catch (Exception s) {
+					Console.WriteLine(s.Message);
+				}
+			}            
         }
         public void ReceiveDataChat() {
             NetworkStream stream = ClientChatStream[ClientChatStream.Count-1];            
@@ -388,8 +393,10 @@ namespace Cursova
                     Thread.Sleep(10);                    
                 }
             }
-            catch { }
-        }
+			catch (Exception s) {
+				Console.WriteLine(s.Message);
+			}
+		}
         public void SendDataChat(NetworkStream r,byte[] arr,byte[]type,bool t=false){
             byte[] buffer = new byte[5 + arr.Length];
             Array.Copy(type,0,buffer,0,1);
@@ -464,8 +471,10 @@ namespace Cursova
                     readFile.Start();
                 }
             }
-            catch { }
-        }
+			catch (Exception s) {
+				Console.WriteLine(s.Message);
+			}
+		}
         private void ListFile_MouseDoubleClick(object sender, MouseButtonEventArgs e){
             if (ListFile.Items.Count > 0 && ListFile.SelectedIndex != null){
                 Task savefile = new Task(new Action(delegate () {
@@ -516,8 +525,10 @@ namespace Cursova
                     }
                     SendFile(arr, Encoding.Unicode.GetString(name), stream);                    
                 }
-                catch { }
-                Thread.Sleep(10);
+				catch (Exception s) {
+					Console.WriteLine(s.Message);
+				}
+				Thread.Sleep(10);
             }
         }
         public bool AllowReadFile(int size){
@@ -535,8 +546,10 @@ namespace Cursova
                         try{
                             FileStream[i].Write(buffer, 0, buffer.Length);
                         }
-                        catch { }
-                }
+						catch (Exception s) {
+							Console.WriteLine(s.Message);
+						}
+				}
                this.Dispatcher.Invoke(() => { ListFile.Items.Add(name + " : " + arr.Length.ToString()); });
             }
             else MessageBox.Show("Buffer FILL / File long(max 50 mb)");
@@ -582,11 +595,15 @@ namespace Cursova
                             Stream stream = new MemoryStream(ListDataFile[j].buffer);
                             m.Attachments.Add(new Attachment(stream, ListDataFile[j].name));
                         }
-                        try{
-                            smtp.Send(m);
-                            ++count;
-                        }
-                        catch { ++error; errors += MailClient[i] + Environment.NewLine; }
+						try {
+							smtp.Send(m);
+							++count;
+						}
+						catch (Exception s) {
+							Console.WriteLine(s.Message);
+							++error;
+							errors += MailClient[i] + Environment.NewLine;
+						}
                         this.Dispatcher.Invoke(()=> { ++progress_bar.Value; });
                     }
                     this.Dispatcher.Invoke(() =>{
@@ -728,9 +745,10 @@ namespace Cursova
                     }
 
                 }
-                catch (Exception ex){
-                }
-            });
+				catch (Exception s) {
+					Console.WriteLine(s.Message);
+				}
+			});
         }
         private void Button_MouseEnter(object sender, MouseEventArgs e){
             (sender as Button).Opacity = 1;
@@ -802,7 +820,11 @@ namespace Cursova
                                 smtp.Send(m);
                                 ++count;
                             }
-                            catch { ++error; errors += MailClient[i] + Environment.NewLine; }
+							catch (Exception s) {
+								Console.WriteLine(s.Message);
+							++error;
+								errors += MailClient[i] + Environment.NewLine;
+							}
                             Dispatcher.Invoke(()=> { ++progress_bar.Value; });
                         }
                         this.Dispatcher.Invoke(() =>{
