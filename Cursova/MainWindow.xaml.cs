@@ -53,6 +53,7 @@ namespace Cursova
         bool video_save = false;
         bool connecting = false;
         bool HideRectangle = false;
+        object locerr = new object();
         VideoFileWriter vFWriter = new VideoFileWriter();
         Thread T_Scrindesctop;
         Thread move_form;
@@ -73,6 +74,7 @@ namespace Cursova
         List<string> MailClient = new List<string>();
         List<System.Drawing.Bitmap> ImageFromVideo = new List<System.Drawing.Bitmap>();
         List<NetworkStream> listeningSocket = new List<NetworkStream>();
+        List<NetworkStream> SoundClient = new List<NetworkStream>();
         int port = 8333, port_chat = 0, port_file = 0,port_microfone=0;
         int coun_photo = 0;
         int rate = 0;
@@ -81,7 +83,7 @@ namespace Cursova
         const int skipTickfps = 1000 / maxFps;
         object locer = new object();
         WaveIn input;
-        UdpClient sender;
+        TcpListener sender;
         IPEndPoint endPoint;
 
         public MainWindow() {
@@ -286,6 +288,7 @@ namespace Cursova
                     MailClient.Add(mail);
                 var pi = ClientsStream[ClientsStream.Count - 1].GetType().GetProperty("Socket", BindingFlags.NonPublic | BindingFlags.Instance);
                 var socketIp = ((Socket)pi.GetValue(ClientsStream[ClientsStream.Count - 1], null)).RemoteEndPoint.ToString();
+  
                 this.Dispatcher.Invoke(() =>
                 {
                     info_2.Items.Add(name + " -> " + socketIp);
@@ -658,7 +661,7 @@ namespace Cursova
                 SendDataChat(null, messange, type);
                 T_Scrindesctop?.Abort();
                 input?.StopRecording();
-                this.sender?.Close();
+                this.sender?.Stop();
                 this.Close();
             }
             else if ((string)(sender as Label).Content == "<>"){
@@ -704,45 +707,50 @@ namespace Cursova
             }
         }
         private void StartMicrofone() {
-            try
-            {
+            try{
                 input = new WaveIn();
                 input.DeviceNumber = 0;
                 input.WaveFormat = new WaveFormat(8000, 32, 2);
                 input.DataAvailable += Input_DataAvailable; ;
-                this.Dispatcher.Invoke(() =>
-                {
+                this.Dispatcher.Invoke(() =>{
                     TextBoxChatClient.Text += "  #Microfone -> true\n";
                     ++progress_bar.Value;
                 });
-                sender = new UdpClient();
-                endPoint = new IPEndPoint(IPAddress.Parse("233.233.233.233"), port_microfone);
+
+                sender = new TcpListener(IPAddress.Parse(MyIp),port_microfone);
+                sender.Start();
+                Task.Run(()=> { Send_M(); });
                 input.StartRecording();
             }
-            catch (Exception s)
-            {
-                this.Dispatcher.Invoke(() =>
-                {
+            catch (Exception s){
+                this.Dispatcher.Invoke(() =>{
                     TextBoxChatClient.Text += "  #Microfone -> false\n";
                     ++progress_bar.Value;
                 });       
-            }
-            
+            }            
         }
         private void Send_M() {
+            while (true) {
+                try {
+                    TcpClient client = sender.AcceptTcpClient();
+                    SoundClient.Add(client.GetStream());
+                }
+                catch { }
+            }
         }
         private void Input_DataAvailable(object sender, WaveInEventArgs e){
             Task.Run(()=> {
-                try{
-                    if (microfone)
-                    {
-                        this.sender.Send(e.Buffer, e.Buffer.Length, endPoint);
+                if (microfone){
+                    lock(locerr)
+                    for (int i = 0; i < SoundClient.Count; ++i){
+                        try{
+                                SoundClient[i].Write(e.Buffer,0,e.Buffer.Length);
+                        }
+                        catch {
+                            SoundClient.RemoveAt(i--);
+                        }
                     }
-
                 }
-				catch (Exception s) {
-					Console.WriteLine(s.Message);
-				}
 			});
         }
         private void Button_MouseEnter(object sender, MouseEventArgs e){
@@ -762,6 +770,7 @@ namespace Cursova
             byte[] messange = Encoding.Unicode.GetBytes("Server -> disconected!");
             SendDataChat(null, messange, type);
             T_Scrindesctop?.Abort();
+            this.sender.Stop();
         }
         private void Rectangle_MouseUp(object sender, MouseButtonEventArgs e){
             m_up = true;

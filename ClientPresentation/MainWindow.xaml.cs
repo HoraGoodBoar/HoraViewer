@@ -55,8 +55,7 @@ namespace ClientPresentation
         Thread in_thread;
         //сокет для приема (протокол UDP)
         TcpClient listeningSocket;
-        //
-        // Bool
+
         bool stan = false;
         bool connect = false;
         bool savephoto = false;
@@ -89,8 +88,8 @@ namespace ClientPresentation
         Task Chat;
         // List
         List<DataFile> ListDataFile = new List<DataFile>();
-        UdpClient receiver;
-        IPEndPoint remoteIp;
+        TcpClient receiver;
+        NetworkStream remoteIp;
 
         object locker = new object();
         public MainWindow()
@@ -328,7 +327,7 @@ namespace ClientPresentation
                         T_Receive_Video = null;
                         connect = false;
                         stan = true;
-                        image_desctop = mail_image_desctop = null;
+                       
                         in_thread.Abort();
                         output.Dispose();
                         this.Dispatcher.Invoke(() => {
@@ -338,6 +337,7 @@ namespace ClientPresentation
                             photodesctop.Background = new ImageBrush(new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + @"\Image\bacground.jpg"))) {
                                 Stretch = Stretch.Fill
                             };
+                            image_desctop.Source = mail_image_desctop.Source = null;
                         });
 
                     }
@@ -358,7 +358,6 @@ namespace ClientPresentation
                     }
                     else if (type[0] == 4){
                         this.Dispatcher.Invoke(() =>{
-                            this.Dispatcher.Invoke(() =>{
                                 for (int i = 0; i < info_2.Items.Count; ++i)
                                     if (info_2.Items[i].ToString() == Encoding.Unicode.GetString(buffer)){
                                         string name_c = "";
@@ -369,7 +368,6 @@ namespace ClientPresentation
                                         TextBoxChatClient.Text += "Disconnect : " +name_c + Environment.NewLine;
                                         info_2.Items.RemoveAt(i);
                                     }
-                            });
                         });
                     }
                     else if (type[0] == 5){
@@ -731,35 +729,27 @@ namespace ClientPresentation
             }
         }
         public void StartMicrofone() {
-            try
-            {
+            try{
                 output = new WaveOut();
                 bufferStream = new BufferedWaveProvider(new WaveFormat(8000,32,2));
-                output.Init(bufferStream);
-                
-                receiver = new UdpClient(port_microfone);
-                receiver.JoinMulticastGroup(IPAddress.Parse( "233.233.233.233"), 20);
-                remoteIp = null;
+                output.Init(bufferStream);               
                 in_thread = new Thread(new ThreadStart(ListeningMicrofone));
                 in_thread.Start();
-
             }
             catch (Exception s) { }
         }
-        private void ListeningMicrofone()
-        {
-            try
-            {
+        private void ListeningMicrofone(){
+            try{
+                receiver = new TcpClient();
+                receiver.Connect(MyIp, port_microfone);
+                remoteIp = receiver.GetStream();
                 output.Play();
-                while (true)
-                {
-                    try
-                    {
-
-                        byte[] data = receiver.Receive(ref remoteIp);
+                while (true){
+                    try{
+                        byte[] data = new byte[65000];
+                        int size=remoteIp.Read(data,0,data.Length);
                         if (microfone)
-                            bufferStream.AddSamples(data, 0, data.Length);
-
+                            bufferStream.AddSamples(data, 0, size);
                     }
                     catch (SocketException ex)
                     {  }

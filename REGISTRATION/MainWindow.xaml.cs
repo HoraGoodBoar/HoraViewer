@@ -32,7 +32,8 @@ namespace REGISTRATION{
                     name += IP[i];
             }
             name_textbox.Text = "Client" + name;
-            if(Dns.GetHostByName(Dns.GetHostName()).AddressList.Count()>1)
+            if(Dns.GetHostByName(Dns.GetHostName()).AddressList.Count()==1)
+                if(Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString() != "127.0.0.1")
                 combobox1.Items.Add("127.0.0.1");
             foreach (var a in Dns.GetHostByName(Dns.GetHostName()).AddressList) {
                 combobox1.Items.Add(a.ToString());
@@ -86,13 +87,13 @@ namespace REGISTRATION{
             port_c = Int32.Parse(ConfigurationSettings.AppSettings["port_c"]);
             port_f = Int32.Parse(ConfigurationSettings.AppSettings["port_f"]);
             port_m = Int32.Parse(ConfigurationSettings.AppSettings["port_m"]);
-            try
-            {
+            try{
+                bool checed = !(bool)HideMenuChecked.IsChecked;
                 if (combobox1.SelectedItem.ToString() != "" && ip_perevirka() && name_textbox.Text != ""){
                     if (client_b.TextDecorations == TextDecorations.Underline){
                         ClientPresentation.MainWindow client = new ClientPresentation.MainWindow();
                         client.Icon = this.Icon;
-                        client.StartProgram(combobox1.SelectedItem.ToString(), name_textbox.Text, mail_textbox.Text, port_v, port_c, port_f, port_m,false);
+                        client.StartProgram(combobox1.SelectedItem.ToString(), name_textbox.Text, mail_textbox.Text, port_v, port_c, port_f, port_m,checed);
                         client.Show();
                         this.Close();
                     }
@@ -100,7 +101,7 @@ namespace REGISTRATION{
                         Cursova.MainWindow boss = new Cursova.MainWindow();
                         boss.Icon = this.Icon;
                         boss.Show();
-                        boss.StartProgram(name_textbox.Text, combobox1.SelectedItem.ToString(), port_v, port_c, port_f, port_m, mail_textbox.Text,false);
+                        boss.StartProgram(name_textbox.Text, combobox1.SelectedItem.ToString(), port_v, port_c, port_f, port_m, mail_textbox.Text,checed);
                         this.Close();
                     }
                 }
