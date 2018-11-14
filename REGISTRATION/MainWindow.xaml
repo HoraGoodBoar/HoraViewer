@@ -70,7 +70,7 @@
 					<ColumnDefinition/>
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
-				<Label Content="Start" Foreground="Green" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" MouseDown="Label_MouseDown_1"/>
+				<Label Content="Start" x:Name="LabelStart" Foreground="Green" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" MouseEnter="Label_MouseEnter" MouseLeave="Label_MouseLeave" MouseDown="Label_MouseDown_1"/>
 			</Grid>
 		</Grid>
 	</Border>

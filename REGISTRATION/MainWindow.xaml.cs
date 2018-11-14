@@ -75,6 +75,7 @@ namespace REGISTRATION{
             }
         }
         private void Label_MouseDown_1(object sender, MouseButtonEventArgs e){
+            LabelStart.IsEnabled = false;
             if (combobox1.SelectedItem == null) {
                 combobox1.Items.Add(combobox1.Text);
                 combobox1.SelectedIndex = combobox1.Items.Count - 1;
@@ -120,7 +121,8 @@ namespace REGISTRATION{
                     }
                 }               
             }
-            catch (Exception s) { MessageBox.Show(s.Message); }
+            catch (Exception s) { MessageBox.Show(s.Message);  }
+            LabelStart.IsEnabled = true;
         }
         private bool ip_perevirka() {
             int j = 0;

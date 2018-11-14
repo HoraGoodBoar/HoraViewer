@@ -733,21 +733,15 @@ namespace ClientPresentation
         public void StartMicrofone() {
             try
             {
-                this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "1"; });
                 output = new WaveOut();
                 bufferStream = new BufferedWaveProvider(new WaveFormat(8000,32,2));
                 output.Init(bufferStream);
-                output.DeviceNumber = 0;
-                this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "2"; });
                 
-                this.Dispatcher.Invoke(()=> { TextBoxChatClient.Text += "3"; });
                 receiver = new UdpClient(port_microfone);
                 receiver.JoinMulticastGroup(IPAddress.Parse( "233.233.233.233"), 20);
                 remoteIp = null;
-                this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "4"; });
                 in_thread = new Thread(new ThreadStart(ListeningMicrofone));
                 in_thread.Start();
-                this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "5"; });
 
             }
             catch (Exception s) { }
@@ -761,12 +755,10 @@ namespace ClientPresentation
                 {
                     try
                     {
-                        this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "Start receive"; });
 
                         byte[] data = receiver.Receive(ref remoteIp);
                         if (microfone)
                             bufferStream.AddSamples(data, 0, data.Length);
-                        this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "End receive"; });
 
                     }
                     catch (SocketException ex)
