@@ -67,20 +67,44 @@
 								<ColumnDefinition />
 								<ColumnDefinition />
 							</Grid.ColumnDefinitions>
-							<Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Load file" Click="Button_Click"/>
-							<Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Folder Date" Click="Button_Click_2"/>
-							<Button Grid.Column="2" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Send mail" Click="Button_Click_1"/>
-						</Grid>
+                            <Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Load file"/>
+                                </Viewbox>
+                            </Button>
+                            <Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click_2">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Folder Date"/>
+                                </Viewbox>
+                            </Button>
+                            <Button Grid.Column="2" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click_1">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Send mail"/>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
 						<Grid Grid.Row="1">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition />
 								<ColumnDefinition />
 								<ColumnDefinition />
 							</Grid.ColumnDefinitions>
-							<Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Save all file" Click="Button_Click_4"/>
-							<Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Open mail" Click="Button_Click_3"/>
-							<Button Grid.Column="2" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" Foreground="Green" FontWeight="Black" BorderBrush="Green" Content="Save video" Click="Button_Click_5"/>
-						</Grid>
+                            <Button Grid.Column="0" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click_4">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Save all file"/>
+                                </Viewbox>
+                            </Button>
+                            <Button Grid.Column="1" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click_3">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Open mail"/>
+                                </Viewbox>
+                            </Button>
+                            <Button Grid.Column="2" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave" Opacity="0.8" Background="White" BorderBrush="Green" Click="Button_Click_5">
+                                <Viewbox Margin="2">
+                                    <TextBlock Foreground="Green" FontWeight="Black" Text="Save video"/>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
 					</Grid>
 				</Grid>
 				<Grid Grid.Row="1" x:Name="buttondesctop"  MouseEnter="r_MouseEnter" MouseLeave="r_MouseLeave" Background="Black" Opacity="0">
