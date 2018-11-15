@@ -60,7 +60,7 @@
 							<RowDefinition Height="0.06*"/>
 							<RowDefinition Height="0.12*"/>
 						</Grid.RowDefinitions>
-						<ListBox Grid.Row="4" Opacity="0.8" BorderBrush="Green" x:Name="ListVideo" SelectionChanged="ListVideo_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
+						<ListBox Grid.Row="4" Opacity="0.8" Foreground="Green" FontWeight="Black" BorderBrush="Green" x:Name="ListVideo" SelectionChanged="ListVideo_SelectionChanged" MouseDoubleClick="ListVideo_MouseDoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
 						<ProgressBar Grid.Row="3" Opacity="0.8" x:Name="progress_bar" />
 						<ListBox Grid.Row="2" AllowDrop="True" Opacity="0.8" BorderBrush="Green" x:Name="ListFile" MouseDoubleClick="ListFile_MouseDoubleClick" SelectionChanged="ListFile_SelectionChanged"/>
 						<Grid Grid.Row="0">

@@ -104,15 +104,13 @@ namespace Cursova
                 foreach (FilterInfo info in camers)
                     ListVideo.Items.Add(info.Name);
                 ListVideo.SelectedIndex = 0;
-            });
-            
-            }
+            });            
+        }
         public void StartProgram(string name,string IP,int port,int port_c,int port_f,int port_m,string mail_boss,bool HideRectangle) {
             try{
                 if (!connecting){
                     this.HideRectangle = HideRectangle;
-                    if (HideRectangle)
-                    {
+                    if (HideRectangle){
                         menu_grid.Opacity = 1;
                         buttondesctop.Opacity = 0.8;
                     }
@@ -120,8 +118,7 @@ namespace Cursova
                     progress_bar.Minimum = progress_bar.Value =0;
                     progress_bar.Maximum = 4;
                     ConnectClient(IP, port);
-                    if (connect)
-                    {
+                    if (connect){
                         Timer = new Task(new Action(Tick));
                         this.name = name;
                         this.MyIp = IP;
@@ -186,10 +183,8 @@ namespace Cursova
             vFWriter.Open(AppDomain.CurrentDomain.BaseDirectory + @"File\lesson.avi", (int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight,8, VideoCodec.MSMPEG4v3);
             int nextTickfps = Environment.TickCount;
             while (true){
-                if (stan){
-                    System.Drawing.Bitmap scrin=null;
-                    if (whocamera == false)
-                    {
+                if (stan && whocamera==false){
+                    System.Drawing.Bitmap scrin;
                         ImageBrush desctopphoto;
                         scrin = new System.Drawing.Bitmap((int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight);
                         System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(scrin);
@@ -198,14 +193,11 @@ namespace Cursova
                             graphics.DrawEllipse(p, System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y, 5, 5);
                             desctopphoto = new ImageBrush(ConvertToBitmapImage(scrin));
                             photodesctop.Background = desctopphoto;
-
                         });
-                    }
                     if (Environment.TickCount > nextTickfps){
-                        if (!video_save && whocamera==false)
+                        if (!video_save)
                             vFWriter.WriteVideoFrame(scrin);
-                        if(whocamera==false)
-                            SendScrinClients(scrin);
+                        SendScrinClients(scrin);
                         nextTickfps += skipTickfps;
                     }    
                     if (savephoto){
@@ -219,6 +211,7 @@ namespace Cursova
                         savephoto = false;
                     }
                 }
+                else Thread.Sleep(100);
                 Thread.Sleep(10);
             }
         }
@@ -464,8 +457,7 @@ namespace Cursova
         private void Window_KeyUp(object sender, KeyEventArgs e){            
         }
         private void StartFile() {
-            try
-            {
+            try{
                 file_server = new TcpListener(IPAddress.Parse(MyIp), port_file);
                 file_server.Start();
                 this.Dispatcher.Invoke(() => {
@@ -481,8 +473,7 @@ namespace Cursova
                     ++progress_bar.Value;
                 });
                 MessageBox.Show(s.Message);
-            }
-            
+            }          
         }
         private void Button_Click(object sender, RoutedEventArgs e){
             try{
@@ -516,7 +507,6 @@ namespace Cursova
                 TcpClient client = file_server.AcceptTcpClient();               
                 client.ReceiveBufferSize = client.SendBufferSize = 50001000;                
                 FileStream.Add(client.GetStream());
-                FileStream[FileStream.Count - 1].ReadTimeout = FileStream[FileStream.Count - 1].ReadTimeout = 60000 ;
                 Task rec_client = new Task(new Action(delegate() {
                     ReceiveFile();
                 }));
@@ -529,6 +519,7 @@ namespace Cursova
             while (true) {
                 try{
                     byte[] size = new byte[4];
+                    
                     stream.Read(size, 0, 4);
                     byte[] name = new byte[BitConverter.ToInt32(size, 0)];
                     int l = stream.Read(name, 0, name.Length);
@@ -544,7 +535,7 @@ namespace Cursova
                         l += stream.Read(arr, l, arr.Length - l);
                         Thread.Sleep(1);
                     }
-                    SendFile(arr, Encoding.Unicode.GetString(name), stream);                    
+                    SendFile(arr, Encoding.Unicode.GetString(name), stream);
                 }
 				catch (Exception s) {
 					Console.WriteLine(s.Message);
@@ -563,15 +554,19 @@ namespace Cursova
                 byte[] buffer = Packet(arr, name);
                 ListDataFile.Add(new DataFile(arr, name));
                 for (int i = 0; i < FileStream.Count; ++i){
-                    if (FileStream[i] != r)
-                        try{
+                    if ( FileStream[i] != r)
+                    {
+                        try
+                        {
                             FileStream[i].Write(buffer, 0, buffer.Length);
                         }
-						catch (Exception s) {
-							Console.WriteLine(s.Message);
-						}
+                        catch (Exception s)
+                        {
+                            //Console.WriteLine(s.Message);
+                        }
+                    }
 				}
-               this.Dispatcher.Invoke(() => { ListFile.Items.Add(name + " : " + arr.Length.ToString()); });
+                this.Dispatcher.Invoke(() => { ListFile.Items.Add(name + " : " + arr.Length.ToString()); });
             }
             else MessageBox.Show("Buffer FILL / File long(max 50 mb)");
         }
@@ -674,15 +669,18 @@ namespace Cursova
         }
         private void Label_MouseDown(object sender, MouseButtonEventArgs e){
             if ((string)(sender as Label).Content == "x") {
-                byte[] type = new byte[1] { 2 };
-                byte[] messange = Encoding.Unicode.GetBytes("Server -> disconected!");
-                SendDataChat(null, messange, type);
+                try
+                {
+                    byte[] type = new byte[1] { 2 };
+                    byte[] messange = Encoding.Unicode.GetBytes("Server -> disconected!");
+                    SendDataChat(null, messange, type);
+                }
+                catch { }
                 T_Scrindesctop?.Abort();
+                Task.Run(() => { cam.Stop(); cam = null; });
                 input?.StopRecording();
                 this.sender?.Stop();
-                this.Close();
-                cam?.Stop();
-                cam = null;
+                this.Close();          
             }
             else if ((string)(sender as Label).Content == "<>"){
                 this.WindowState = WindowState.Maximized;
@@ -783,7 +781,6 @@ namespace Cursova
             (sender as Button).Background = Brushes.White;
             (sender as Button).Foreground = Brushes.Green;
         }
-
         private void Window_Drop(object sender, DragEventArgs e)
         {
             string[] name_files = (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -796,53 +793,66 @@ namespace Cursova
                 }                   
             });
         }
-
         private void Window_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false) == true)
                 e.Effects = DragDropEffects.All;
         }
-
         private void ListVideo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.Dispatcher.Invoke(()=> {
-                if (ListVideo.SelectedIndex == 0)
-                { whocamera = false; cam?.Stop(); }
-                else
-                {
-                    cam = new VideoCaptureDevice(camers[ListVideo.SelectedIndex - 1].MonikerString);
-                    cam.NewFrame += Cam_NewFrame;
-                    cam.Start();
-                    whocamera = true;
-                }
-            });
+           
         }
-
-        private void Cam_NewFrame(object sender, NewFrameEventArgs eventArgs)
-        {
-            if (stan)
-            {
-                this.Dispatcher.Invoke(() =>
-                {
-                    webcamera = (System.Drawing.Bitmap)eventArgs.Frame.Clone();
-                    ImageBrush desctopphoto = new ImageBrush(ConvertToBitmapImage(webcamera));
-                    photodesctop.Background = desctopphoto;
-                });
-                if (webcamera != null)
-                    SendScrinClients(webcamera);
+        private void Cam_NewFrame(object sender, NewFrameEventArgs eventArgs){
+            System.Drawing.Bitmap sending=null;
+             this.Dispatcher.Invoke(() =>{
+                 try{
+                     if (stan && whocamera == true){
+                         webcamera = (System.Drawing.Bitmap)eventArgs.Frame.Clone();
+                         sending = webcamera;
+                         ImageBrush desctopphoto = new ImageBrush(ConvertToBitmapImage(webcamera));
+                         if (desctopphoto != null)
+                            photodesctop.Background = desctopphoto;
+                     }
+                 }
+                 catch (Exception s) { MessageBox.Show(s.Message); }
+             });
+             if (sending!= null)
+                 SendScrinClients(sending);      
+        }
+        private void ListVideo_MouseDoubleClick(object sender, MouseButtonEventArgs e){            
+            try{
+                this.Dispatcher.Invoke(()=> {
+                    ListVideo.IsEnabled = false;
+                    if (ListVideo.SelectedIndex == 0 && whocamera != false){
+                        Task.Run(()=> { cam.Stop(); cam = null; });
+                       
+                        whocamera = false;
+                    }
+                    else if (ListVideo.SelectedIndex != 0 && whocamera != true){
+                        whocamera = true;
+                        cam = new VideoCaptureDevice(camers[ListVideo.SelectedIndex - 1].MonikerString);
+                        cam.NewFrame += Cam_NewFrame;
+                        cam.Start();
+                    }
+                    ListVideo.IsEnabled = true;
+                });            
             }
+            catch (Exception s) { MessageBox.Show(s.Message); }
+            
         }
-
         private void Rectangle_MouseMove(object sender, MouseEventArgs e){
         }
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e){
-            byte[] type = new byte[1] { 2 };
-            byte[] messange = Encoding.Unicode.GetBytes("Server -> disconected!");
-            SendDataChat(null, messange, type);
+            try
+            {
+                byte[] type = new byte[1] { 2 };
+                byte[] messange = Encoding.Unicode.GetBytes("Server -> disconected!");
+                SendDataChat(null, messange, type);
+            }
+            catch { }
             T_Scrindesctop?.Abort();
+            Task.Run(() => { cam.Stop(); cam = null; });
             this.sender.Stop();
-            cam?.Stop();
-            cam = null;
         }
         private void Rectangle_MouseUp(object sender, MouseButtonEventArgs e){
             m_up = true;

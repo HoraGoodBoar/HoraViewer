@@ -125,7 +125,10 @@ namespace ClientPresentation
                 if (!stan)
                 {
                     Rectangle1.Fill = stop;
-                    photodesctop.Background = Brushes.Silver;
+                    this.Dispatcher.Invoke(()=> {
+                        photodesctop.Background = Brushes.Silver;
+                    });
+                    
                     if (T_Receive_Video == null)
                     {
                         T_Receive_Video = new Thread(new ThreadStart(Receive_Video));
@@ -159,7 +162,7 @@ namespace ClientPresentation
         public void Receive_Video()
         {
             ImageBrush desctopphoto;           
-            while (true){
+            while (true){                
                 try{
                     if (connect){
                         byte[] size = new byte[4];
@@ -173,7 +176,7 @@ namespace ClientPresentation
                             Thread.Sleep(1);
                         }                        
                             MemoryStream photo = new MemoryStream(data);
-                            if (stan){
+                        if (stan){
                                 this.Dispatcher.Invoke(() =>{
                                     BitmapImage image = new BitmapImage();
                                     image.BeginInit();
@@ -183,7 +186,6 @@ namespace ClientPresentation
                                     desctopphoto = new ImageBrush(image);
                                     if (!HideRectangle)
                                         mail_image_desctop.Source = image;
-                                    //photodesctop.Background = desctopphoto;
                                     else image_desctop.Source = image;
                                     if (savephoto){
                                             System.Drawing.Bitmap scrin = new System.Drawing.Bitmap(image.StreamSource);
@@ -197,6 +199,8 @@ namespace ClientPresentation
                                      }
                                 });                           
                         }
+                        if (photodesctop.Background != Brushes.Silver)
+                            this.Dispatcher.Invoke(()=> { photodesctop.Background = Brushes.Silver; });
                     }
                 }
                 catch (Exception s) {
@@ -212,6 +216,7 @@ namespace ClientPresentation
                             info_1.Text = "-> " + (DateTime.Now - start).ToString().Remove(8, 8) + " : " + name+ Environment.NewLine + "-> " + MyIp + " : " + port.ToString();
                             TextBoxChatClient.SelectionStart = TextBoxChatClient.Text.Length;
                             TextBoxChatClient.ScrollToEnd();
+                            
                         });
                     Thread.Sleep(1000);
                 }
@@ -241,7 +246,13 @@ namespace ClientPresentation
                         progress_bar.Minimum = progress_bar.Value = 0;
                         progress_bar.Maximum = 1;
                     });
-                    client.Connect(IP, port);
+                    try
+                    {
+                        client.Connect(IP, port);
+                    }
+                    catch { this.Dispatcher.Invoke(()=> {
+                        TextBoxChatClient.Text += "Fideo : false\n";
+                    }); }
                     if (T_Receive_Video == null)
                     {
                         T_Receive_Video = new Thread(new ThreadStart(Receive_Video));
@@ -269,7 +280,6 @@ namespace ClientPresentation
                     
                     this.Dispatcher.Invoke(() => { TextBoxChatClient.Text += "Error connecting!\n"; });
                     connect =  false;
-                    MessageBox.Show(s.Message);
                 }
                 connecting = false;
             }
@@ -296,7 +306,9 @@ namespace ClientPresentation
                     Chat.Start();
                 }
                 catch (Exception s) {
-                    MessageBox.Show(s.Message);
+                     this.Dispatcher.Invoke(()=> {
+                        TextBoxChatClient.Text += "Chat : false\n";
+                    }); 
                 }
             }));
             c.Start();
@@ -473,7 +485,9 @@ namespace ClientPresentation
                 rec_file.Start();
             }
             catch (Exception s) {
-                MessageBox.Show(s.Message);
+                this.Dispatcher.Invoke(() => {
+                    TextBoxChatClient.Text += "File : false\n";
+                });
             }
         }
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -490,47 +504,49 @@ namespace ClientPresentation
             catch { }
         }
         private void ReceiveFile()
-        {
-            file_stream.ReadTimeout = file_stream.WriteTimeout = 60000;
-            try
-            {
+        {            
                 while (true)
                 {
-
-                    byte[] size = new byte[4];
-                    file_stream.Read(size, 0, 4);
-
-
-                    byte[] name = new byte[BitConverter.ToInt32(size, 0)];
-                    int l = file_stream.Read(name, 0, name.Length);
-
-                    while (l < name.Length){
-                        l += file_stream.Read(name, l, name.Length - l);
-                        Thread.Sleep(1);
-                    }
-
-                    size = new byte[4];
-
-                    file_stream.Read(size, 0, 4);
-
-                    byte[] arr = new byte[BitConverter.ToInt32(size, 0)];
-                    l = file_stream.Read(arr, 0, arr.Length);
-
-                    while (l < arr.Length)
+                    try
                     {
-                        l += file_stream.Read(arr, l, arr.Length - l);
-                        Thread.Sleep(1);
-                    }
+                        byte[] size = new byte[4];
+                        int l=file_stream.Read(size, 0, 4);
+                        while (l < size.Length)
+                        {
+                            l += file_stream.Read(size, l, size.Length - l);
+                            Thread.Sleep(1);
+                        }
+                        l = 0;
 
-                    if (AllowReadFile(arr.Length)){
-                        ListDataFile.Add(new DataFile(arr, Encoding.Unicode.GetString(name)));
-                        this.Dispatcher.Invoke(() => { ListFile.Items.Add(Encoding.Unicode.GetString(name) + " : " + arr.Length.ToString()); });
-                    }
-                    else MessageBox.Show("Buffer fill!");
+                        byte[] name = new byte[BitConverter.ToInt32(size, 0)];
+                        l = file_stream.Read(name, 0, name.Length);
 
-                }
+                        while (l < name.Length){
+                            l += file_stream.Read(name, l, name.Length - l);
+                            Thread.Sleep(1);
+                        }
+                        l = 0;
+
+                        size = new byte[4];
+                        file_stream.Read(size, 0, 4);
+
+                        byte[] arr = new byte[BitConverter.ToInt32(size, 0)];
+                        l = file_stream.Read(arr, 0, arr.Length);
+
+                        while (l < arr.Length) {
+                            l += file_stream.Read(arr, l, arr.Length - l);
+                            Thread.Sleep(1);
+                        }
+
+                        if (AllowReadFile(arr.Length)){
+                            ListDataFile.Add(new DataFile(arr, Encoding.Unicode.GetString(name)));
+                            this.Dispatcher.Invoke(() => { ListFile.Items.Add(Encoding.Unicode.GetString(name) + " : " + arr.Length.ToString()); });
+                        }
+                        else MessageBox.Show("Buffer fill!");
+                    }
+                    catch { }
             }
-            catch { }
+            
         }
         public bool AllowReadFile(int size)
         {
@@ -736,7 +752,10 @@ namespace ClientPresentation
                 in_thread = new Thread(new ThreadStart(ListeningMicrofone));
                 in_thread.Start();
             }
-            catch (Exception s) { }
+            catch
+            {
+                
+            }
         }
         private void ListeningMicrofone(){
             try{
@@ -755,7 +774,11 @@ namespace ClientPresentation
                     {  }
                 }
             }
-            catch(Exception s) { receiver?.Close(); }
+            catch(Exception s) { receiver?.Close();
+                this.Dispatcher.Invoke(() => {
+                TextBoxChatClient.Text += "Sound : false\n";
+            });
+            }
         }
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

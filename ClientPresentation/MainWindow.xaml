@@ -51,7 +51,7 @@
 							<RowDefinition />
 							<RowDefinition Height="0.06*"/>
 						</Grid.RowDefinitions>
-						<ListBox Grid.Row="2" Opacity="0.8" x:Name="ListFile" BorderBrush="Green" MouseDoubleClick="ListFile_MouseDoubleClick"/>
+						<ListBox Grid.Row="2"  Opacity="0.8" x:Name="ListFile" BorderBrush="Green" MouseDoubleClick="ListFile_MouseDoubleClick"/>
 						<ProgressBar x:Name="progress_bar" Opacity="0.8" Grid.Row="3" />
 						<Grid Grid.Row="0">
 							<Grid.ColumnDefinitions>
