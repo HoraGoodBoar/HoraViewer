@@ -7,7 +7,7 @@
         mc:Ignorable="d"
        Title="HoraViewer" Height="400" Width="700" WindowStyle="None"
 		AllowsTransparency="True"
-		WindowStartupLocation="CenterScreen" Closing="Window_Closing_1"  ResizeMode="CanResizeWithGrip" KeyUp="Window_KeyDown">
+		WindowStartupLocation="CenterScreen" Closing="Window_Closing_1"  ResizeMode="CanResizeWithGrip" KeyUp="Window_KeyDown" AllowDrop="True" DragDrop.Drop="Window_Drop" DragEnter="Window_DragEnter">
 	<Window.Background>
 		<ImageBrush/>
 	</Window.Background>

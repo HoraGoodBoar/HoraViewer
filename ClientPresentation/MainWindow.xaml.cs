@@ -760,5 +760,25 @@ namespace ClientPresentation
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AllocConsole();
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            string[] name_files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            this.Dispatcher.Invoke(() => {
+                foreach (string file in name_files)
+                {
+                    Task readFile = new Task(new Action(delegate () {
+                        SendFile(File.ReadAllBytes(file), System.IO.Path.GetFileName(file));
+                    }));
+                    readFile.Start();
+                }
+            });
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false) == true)
+                e.Effects = DragDropEffects.All;
+        }
+
     }
 }

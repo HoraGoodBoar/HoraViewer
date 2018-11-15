@@ -7,11 +7,11 @@
         mc:Ignorable="d"
        Title="HoraViewer" Height="400" Width="700" WindowStyle="None"
 		AllowsTransparency="True"
-		WindowStartupLocation="CenterScreen" Closing="Window_Closing_1" MouseUp="Rectangle_MouseUp" MouseMove="Rectangle_MouseMove" ResizeMode="CanResizeWithGrip" KeyUp="Window_KeyDown">
+		WindowStartupLocation="CenterScreen" Closing="Window_Closing_1" MouseUp="Rectangle_MouseUp" MouseMove="Rectangle_MouseMove" ResizeMode="CanResizeWithGrip" KeyUp="Window_KeyDown" DragDrop.Drop="Window_Drop" DragEnter="Window_DragEnter">
 	<Window.Background>
 		<ImageBrush/>
 	</Window.Background>
-	<Border  BorderBrush="White" x:Name="bor">
+	<Border  BorderBrush="White" x:Name="bor" AllowDrop="True">
 		<Grid x:Name="photodesctop" Background="DarkGreen" >
 			<Grid.RowDefinitions>
 				<RowDefinition Height="0.05*"/>
@@ -58,9 +58,11 @@
 							<RowDefinition Height="0.06*"/>
 							<RowDefinition />
 							<RowDefinition Height="0.06*"/>
+							<RowDefinition Height="0.12*"/>
 						</Grid.RowDefinitions>
+						<ListBox Grid.Row="4" Opacity="0.8" BorderBrush="Green" x:Name="ListVideo" SelectionChanged="ListVideo_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
 						<ProgressBar Grid.Row="3" Opacity="0.8" x:Name="progress_bar" />
-						<ListBox Grid.Row="2" Opacity="0.8" BorderBrush="Green" x:Name="ListFile" MouseDoubleClick="ListFile_MouseDoubleClick" SelectionChanged="ListFile_SelectionChanged"/>
+						<ListBox Grid.Row="2" AllowDrop="True" Opacity="0.8" BorderBrush="Green" x:Name="ListFile" MouseDoubleClick="ListFile_MouseDoubleClick" SelectionChanged="ListFile_SelectionChanged"/>
 						<Grid Grid.Row="0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition />

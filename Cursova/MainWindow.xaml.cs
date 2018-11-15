@@ -23,6 +23,7 @@ using System.Configuration;
 
 using AForge.Video;
 using AForge.Video.FFMPEG;
+using AForge.Video.DirectShow;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
 
@@ -54,6 +55,7 @@ namespace Cursova
         bool connecting = false;
         bool HideRectangle = false;
         object locerr = new object();
+        object web_locerr = new object();
         VideoFileWriter vFWriter = new VideoFileWriter();
         Thread T_Scrindesctop;
         Thread move_form;
@@ -85,7 +87,10 @@ namespace Cursova
         WaveIn input;
         TcpListener sender;
         IPEndPoint endPoint;
-
+        System.Drawing.Bitmap webcamera;
+        FilterInfoCollection camers;
+        VideoCaptureDevice cam;
+        bool whocamera = false;
         public MainWindow() {
             InitializeComponent();
             T_Scrindesctop = new Thread(new ThreadStart(ScrinDesctop));
@@ -93,7 +98,15 @@ namespace Cursova
             r_audio.Fill = m_yes;
             m_l.Content = "<>";
             photodesctop.Background = new ImageBrush(new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + @"\Image\bacground.jpg"))) { Stretch = Stretch.Fill };
-        }
+            camers = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            this.Dispatcher.Invoke(()=> {
+                ListVideo.Items.Add("Desctop");
+                foreach (FilterInfo info in camers)
+                    ListVideo.Items.Add(info.Name);
+                ListVideo.SelectedIndex = 0;
+            });
+            
+            }
         public void StartProgram(string name,string IP,int port,int port_c,int port_f,int port_m,string mail_boss,bool HideRectangle) {
             try{
                 if (!connecting){
@@ -174,20 +187,25 @@ namespace Cursova
             int nextTickfps = Environment.TickCount;
             while (true){
                 if (stan){
-                    System.Drawing.Bitmap scrin;
-                    ImageBrush desctopphoto;
-                    scrin = new System.Drawing.Bitmap((int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight);
-                    System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(scrin);                    
-                    this.Dispatcher.Invoke(() =>{
-                        graphics.CopyFromScreen(0, 0, 0, 0, scrin.Size);
-                        graphics.DrawEllipse(p, System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y, 5, 5);
-                        desctopphoto = new ImageBrush(ConvertToBitmapImage(scrin));
-                        photodesctop.Background = desctopphoto;                       
-                    });
+                    System.Drawing.Bitmap scrin=null;
+                    if (whocamera == false)
+                    {
+                        ImageBrush desctopphoto;
+                        scrin = new System.Drawing.Bitmap((int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight);
+                        System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(scrin);
+                        this.Dispatcher.Invoke(() =>{
+                            graphics.CopyFromScreen(0, 0, 0, 0, scrin.Size);
+                            graphics.DrawEllipse(p, System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y, 5, 5);
+                            desctopphoto = new ImageBrush(ConvertToBitmapImage(scrin));
+                            photodesctop.Background = desctopphoto;
+
+                        });
+                    }
                     if (Environment.TickCount > nextTickfps){
-                        if (!video_save)
+                        if (!video_save && whocamera==false)
                             vFWriter.WriteVideoFrame(scrin);
-                        SendScrinClients(scrin);
+                        if(whocamera==false)
+                            SendScrinClients(scrin);
                         nextTickfps += skipTickfps;
                     }    
                     if (savephoto){
@@ -663,6 +681,8 @@ namespace Cursova
                 input?.StopRecording();
                 this.sender?.Stop();
                 this.Close();
+                cam?.Stop();
+                cam = null;
             }
             else if ((string)(sender as Label).Content == "<>"){
                 this.WindowState = WindowState.Maximized;
@@ -763,6 +783,56 @@ namespace Cursova
             (sender as Button).Background = Brushes.White;
             (sender as Button).Foreground = Brushes.Green;
         }
+
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            string[] name_files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            this.Dispatcher.Invoke(() =>{
+                foreach (string file in name_files){
+                    Task readFile = new Task(new Action(delegate () {
+                        SendFile(File.ReadAllBytes(file), System.IO.Path.GetFileName(file));
+                    }));
+                    readFile.Start();
+                }                   
+            });
+        }
+
+        private void Window_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false) == true)
+                e.Effects = DragDropEffects.All;
+        }
+
+        private void ListVideo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.Dispatcher.Invoke(()=> {
+                if (ListVideo.SelectedIndex == 0)
+                { whocamera = false; cam?.Stop(); }
+                else
+                {
+                    cam = new VideoCaptureDevice(camers[ListVideo.SelectedIndex - 1].MonikerString);
+                    cam.NewFrame += Cam_NewFrame;
+                    cam.Start();
+                    whocamera = true;
+                }
+            });
+        }
+
+        private void Cam_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            if (stan)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    webcamera = (System.Drawing.Bitmap)eventArgs.Frame.Clone();
+                    ImageBrush desctopphoto = new ImageBrush(ConvertToBitmapImage(webcamera));
+                    photodesctop.Background = desctopphoto;
+                });
+                if (webcamera != null)
+                    SendScrinClients(webcamera);
+            }
+        }
+
         private void Rectangle_MouseMove(object sender, MouseEventArgs e){
         }
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e){
@@ -771,6 +841,8 @@ namespace Cursova
             SendDataChat(null, messange, type);
             T_Scrindesctop?.Abort();
             this.sender.Stop();
+            cam?.Stop();
+            cam = null;
         }
         private void Rectangle_MouseUp(object sender, MouseButtonEventArgs e){
             m_up = true;
