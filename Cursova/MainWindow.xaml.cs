@@ -22,7 +22,7 @@ using System.Net.Mail;
 using System.Configuration;
 
 using AForge.Video;
-using AForge.Video.FFMPEG;
+//using AForge.Video.FFMPEG;
 using AForge.Video.DirectShow;
 using NAudio.Wave;
 using NAudio.CoreAudioApi;
@@ -56,7 +56,7 @@ namespace Cursova
         bool HideRectangle = false;
         object locerr = new object();
         object web_locerr = new object();
-        VideoFileWriter vFWriter = new VideoFileWriter();
+        //VideoFileWriter vFWriter = new VideoFileWriter();
         Thread T_Scrindesctop;
         Thread move_form;
         Task Timer;
@@ -180,7 +180,7 @@ namespace Cursova
         }
         private void ScrinDesctop(){
             System.Drawing.Pen p = new System.Drawing.Pen(System.Drawing.Color.White, 3);
-            vFWriter.Open(AppDomain.CurrentDomain.BaseDirectory + @"File\lesson.avi", (int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight,8, VideoCodec.MSMPEG4v3);
+           // vFWriter.Open(AppDomain.CurrentDomain.BaseDirectory + @"File\lesson.avi", (int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight,8, VideoCodec.MSMPEG4v3);
             int nextTickfps = Environment.TickCount;
             while (true){
                 if (stan && whocamera==false){
@@ -196,7 +196,7 @@ namespace Cursova
                         });
                     if (Environment.TickCount > nextTickfps){
                         if (!video_save)
-                            vFWriter.WriteVideoFrame(scrin);
+                            //vFWriter.WriteVideoFrame(scrin);
                         SendScrinClients(scrin);
                         nextTickfps += skipTickfps;
                     }    
@@ -871,7 +871,7 @@ namespace Cursova
             if ((string)(sender as Button).Content == "Save video"){
                 video_save = true;
                 Task.Run(() =>{
-                    vFWriter.Close();
+                   // vFWriter.Close();
                     Dispatcher.Invoke(() => { TextBoxChatClient.Text += "Video compiled!" + Environment.NewLine; });
                 });
                 (sender as Button).Content = "Send video mail";
@@ -927,7 +927,7 @@ namespace Cursova
                 (sender as Button).Content = "Receive new video";
             }
             else if ((string)(sender as Button).Content == "Receive new video") {
-                vFWriter.Open(AppDomain.CurrentDomain.BaseDirectory + @"File\test.avi", (int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight,8, VideoCodec.Default);
+                //vFWriter.Open(AppDomain.CurrentDomain.BaseDirectory + @"File\test.avi", (int)System.Windows.SystemParameters.PrimaryScreenWidth, (int)System.Windows.SystemParameters.PrimaryScreenHeight,8, VideoCodec.Default);
                 video_save = false;
                 (sender as Button).Content = "Save video";
             }
